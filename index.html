@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vansh Kamra | AI/ML Engineer</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600&display=swap"
+        rel="stylesheet">
+
+    <!-- Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+
+    <style>
+        /* --------------------------------------
+           BRUTALIST DARK THEME VARIABLES
+        -------------------------------------- */
+        :root {
+            --bg: #000000;
+            --text: #ffffff;
+            --muted: #777777;
+            --border: rgba(255, 255, 255, 0.12);
+            --accent: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            cursor: none;
+            /* Custom cursor */
+            -webkit-font-smoothing: antialiased;
+        }
+
+        ::-webkit-scrollbar {
+            width: 0px;
+        }
+
+        ::selection {
+            background: #ffffff;
+            color: #000000;
+        }
+
+        /* --------------------------------------
+           CUSTOM CURSOR
+        -------------------------------------- */
+        .cursor-dot {
+            width: 4px;
+            height: 4px;
+            background: #fff;
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 10000;
+            transform: translate(-50%, -50%);
+            mix-blend-mode: difference;
+        }
+
+        .cursor-ring {
+            width: 30px;
+            height: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 0;
+            /* Sharp square cursor for brutalist feel */
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%) rotate(45deg);
+            transition: width 0.3s, height 0.3s, background-color 0.3s, transform 0.3s;
+            mix-blend-mode: difference;
+        }
+
+        .cursor-ring.hover {
+            width: 60px;
+            height: 60px;
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translate(-50%, -50%) rotate(0deg);
+        }
+
+        /* --------------------------------------
+           WEBGL CANVAS
+        -------------------------------------- */
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* --------------------------------------
+           NAVIGATION
+        -------------------------------------- */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 2.5rem 5vw;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            mix-blend-mode: difference;
+        }
+
+        .logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            text-decoration: none;
+            color: #fff;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 3rem;
+            list-style: none;
+            font-family: 'Space Mono', monospace;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #fff;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: opacity 0.3s;
+        }
+
+        .nav-links a:hover {
+            opacity: 0.5;
+        }
+
+        /* --------------------------------------
+           LAYOUT & PANELS
+        -------------------------------------- */
+        .panel {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            width: 100%;
+            padding: 15vh 5vw;
+            display: flex;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* --------------------------------------
+           TYPOGRAPHY
+        -------------------------------------- */
+        h1,
+        h2,
+        h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 800;
+            letter-spacing: -0.05em;
+            color: #fff;
+        }
+
+        p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            color: var(--muted);
+        }
+
+        .sec-title {
+            font-size: clamp(3rem, 6vw, 6rem);
+            margin-bottom: 3rem;
+            line-height: 1;
+            text-transform: uppercase;
+        }
+
+        /* --------------------------------------
+           HERO SECTION
+        -------------------------------------- */
+        .hero-title {
+            font-size: clamp(4rem, 13vw, 16rem);
+            line-height: 0.85;
+            text-transform: uppercase;
+            mix-blend-mode: difference;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-meta {
+            display: flex;
+            gap: 3rem;
+            margin-top: 4rem;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            color: #fff;
+            border-top: 1px solid var(--border);
+            padding-top: 1.5rem;
+            max-width: 800px;
+            mix-blend-mode: difference;
+        }
+
+        /* --------------------------------------
+           ABOUT SECTION
+        -------------------------------------- */
+        #about .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5rem;
+        }
+
+        .about-text p {
+            margin-bottom: 2rem;
+        }
+
+        .stats-row {
+            display: flex;
+            gap: 4rem;
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .stat-block .num {
+            font-family: 'Space Mono', monospace;
+            font-size: 3rem;
+            color: #fff;
+            line-height: 1;
+        }
+
+        .stat-block .lbl {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 1rem;
+            color: var(--muted);
+        }
+
+        /* --------------------------------------
+           SKILLS SECTION
+        -------------------------------------- */
+        #skills .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5rem;
+        }
+
+        .skills-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 3rem;
+        }
+
+        .skill-item {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.9rem;
+            padding: 1.2rem 2rem;
+            border: 1px solid var(--border);
+            color: #fff;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(5px);
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .skill-item:hover {
+            background: #fff;
+            color: #000;
+            transform: translateX(10px);
+        }
+
+        /* --------------------------------------
+           PROJECTS SECTION
+        -------------------------------------- */
+        .proj-list {
+            border-top: 1px solid var(--border);
+            margin-top: 4rem;
+        }
+
+        .proj-row {
+            display: grid;
+            grid-template-columns: 1fr 3fr 1.5fr;
+            gap: 2rem;
+            padding: 4rem 0;
+            border-bottom: 1px solid var(--border);
+            transition: all 0.4s ease;
+            text-decoration: none;
+            color: inherit;
+            align-items: center;
+        }
+
+        .proj-row:hover {
+            background: rgba(255, 255, 255, 0.02);
+            padding-left: 2rem;
+            padding-right: 2rem;
+        }
+
+        .proj-meta {
+            font-family: 'Space Mono', monospace;
+            color: var(--muted);
+            font-size: 1rem;
+        }
+
+        .proj-name {
+            font-size: clamp(2rem, 3vw, 3rem);
+            margin-bottom: 1rem;
+        }
+
+        .proj-desc {
+            color: var(--muted);
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .proj-tags {
+            font-family: 'Space Mono', monospace;
+            text-align: right;
+            color: var(--muted);
+            font-size: 0.85rem;
+            line-height: 1.8;
+        }
+
+        /* --------------------------------------
+           AWARDS SECTION
+        -------------------------------------- */
+        .awards-list {
+            border-top: 1px solid var(--border);
+            margin-top: 4rem;
+        }
+
+        .award-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 3rem 0;
+            border-bottom: 1px solid var(--border);
+            transition: all 0.4s ease;
+        }
+
+        .award-row:hover {
+            background: rgba(255, 255, 255, 0.02);
+            padding-left: 2rem;
+            padding-right: 2rem;
+        }
+
+        .award-name {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .award-desc {
+            color: var(--muted);
+            font-size: 1.1rem;
+        }
+
+        .award-year {
+            font-family: 'Space Mono', monospace;
+            color: #fff;
+            font-size: 1.1rem;
+        }
+
+        /* --------------------------------------
+           CONTACT SECTION
+        -------------------------------------- */
+        #contact {
+            justify-content: center;
+            text-align: center;
+            min-height: 80vh;
+        }
+
+        .email-huge {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(1.5rem, 5vw, 6rem);
+            font-weight: 800;
+            letter-spacing: -0.05em;
+            color: #fff;
+            text-decoration: none;
+            position: relative;
+            display: inline-block;
+            margin-top: 2rem;
+            transition: opacity 0.3s;
+        }
+
+        .email-huge::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0%;
+            height: 4px;
+            background: #fff;
+            transition: width 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .email-huge:hover::after {
+            width: 100%;
+        }
+
+        .email-huge:hover {
+            opacity: 0.8;
+        }
+
+        /* --------------------------------------
+           FOOTER
+        -------------------------------------- */
+        footer {
+            padding: 3rem 5vw;
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid var(--border);
+            font-family: 'Space Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--muted);
+            position: relative;
+            z-index: 1;
+        }
+
+        .socials {
+            display: flex;
+            gap: 3rem;
+        }
+
+        .socials a {
+            color: var(--muted);
+            text-decoration: none;
+            transition: color 0.3s;
+            text-transform: uppercase;
+        }
+
+        .socials a:hover {
+            color: #fff;
+        }
+
+        /* --------------------------------------
+           RESPONSIVE
+        -------------------------------------- */
+        @media (max-width: 1024px) {
+
+            #about .grid-layout,
+            #skills .grid-layout {
+                grid-template-columns: 1fr;
+                gap: 4rem;
+            }
+
+            .proj-row {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+                padding: 3rem 0;
+            }
+
+            .proj-tags {
+                text-align: left;
+            }
+
+            .hero-meta {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                padding: 1.5rem 5vw;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .stats-row {
+                flex-direction: column;
+                gap: 2rem;
+            }
+
+            .award-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+                padding: 2.5rem 0;
+            }
+
+            footer {
+                flex-direction: column;
+                gap: 2rem;
+                align-items: flex-start;
+            }
+
+            .socials {
+                flex-wrap: wrap;
+                gap: 1.5rem;
+            }
+
+            .cursor-dot,
+            .cursor-ring {
+                display: none;
+            }
+
+            body {
+                cursor: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Custom Cursor -->
+    <div class="cursor-dot" id="cursor-dot"></div>
+    <div class="cursor-ring" id="cursor-ring"></div>
+
+    <!-- WebGL Background -->
+    <div id="canvas-container"></div>
+
+    <!-- Navigation -->
+    <nav>
+        <a href="#" class="logo">VK.</a>
+        <ul class="nav-links">
+            <li><a href="#about">About</a></li>
+            <li><a href="#skills">Skills</a></li>
+            <li><a href="#projects">Work</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
+
+    <!-- Sections -->
+    <section id="hero" class="panel">
+        <div class="container">
+            <h1 class="hero-title">VANSH<br>KAMRA</h1>
+            <div class="hero-meta">
+                <span>AI / ML ENGINEER</span>
+                <span>BACKEND SYSTEMS</span>
+                <span>BASED IN INDIA</span>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="panel">
+        <div class="container">
+            <div class="grid-layout">
+                <div></div> <!-- Empty for 3D Swarm -->
+                <div class="content">
+                    <h2 class="sec-title">THE ARCHITECTURE<br>OF INTELLIGENCE.</h2>
+                    <p>I build intelligent systems that adapt and scale. From predictive models to multi-agent LLM
+                        orchestrators, my focus is at the bleeding edge of machine learning and applied AI.</p>
+                    <p>I engineer robust, data-driven architectures that transform complex datasets into actionable,
+                        real-time insights, shipping models that solve actual human problems.</p>
+
+                    <div class="stats-row">
+                        <div class="stat-block">
+                            <div class="num">05+</div>
+                            <div class="lbl">PRODUCTION SYSTEMS</div>
+                        </div>
+                        <div class="stat-block">
+                            <div class="num">10+</div>
+                            <div class="lbl">ML MODELS TRAINED</div>
+                        </div>
+                        <div class="stat-block">
+                            <div class="num">100k+</div>
+                            <div class="lbl">REQUESTS ROUTED</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="skills" class="panel">
+        <div class="container">
+            <div class="grid-layout">
+                <div class="content">
+                    <h2 class="sec-title">CORE<br>PROTOCOLS.</h2>
+                    <p>A brutalist, no-nonsense stack. I leverage modern frameworks and low-level tools to build highly concurrent backends, distributed systems, and scalable AI infrastructure.</p>
+
+                    <div class="skills-grid">
+                        <div class="skill-item">PYTHON</div>
+                        <div class="skill-item">TYPESCRIPT</div>
+                        <div class="skill-item">FASTAPI / NODE.JS</div>
+                        <div class="skill-item">KAFKA</div>
+                        <div class="skill-item">REDIS</div>
+                        <div class="skill-item">DOCKER</div>
+                        <div class="skill-item">POSTGRES & MONGODB</div>
+                        <div class="skill-item">PYTORCH</div>
+                        <div class="skill-item">LANGGRAPH</div>
+                        <div class="skill-item">MLOPS & AIRFLOW</div>
+                        <div class="skill-item">AWS / GCP</div>
+                    </div>
+                </div>
+                <div></div> <!-- Empty for 3D Swarm -->
+            </div>
+        </div>
+    </section>
+
+    <section id="projects" class="panel">
+        <div class="container">
+            <h2 class="sec-title">SELECTED WORKS.</h2>
+            <div class="proj-list">
+
+                <a href="https://github.com/vanshkamra12/fraudshield" target="_blank" class="proj-row">
+                    <div class="proj-meta">01 — MLOps</div>
+                    <div class="proj-info">
+                        <h3 class="proj-name">FRAUDSHIELD</h3>
+                        <p class="proj-desc">End-to-end MLOps pipeline processing streaming transactions via Kafka. Features a LightGBM scoring service (<10ms latency) and automated Airflow retraining.</p>
+                    </div>
+                    <div class="proj-tags">KAFKA<br>FASTAPI<br>AIRFLOW</div>
+                </a>
+
+                <a href="https://github.com/vanshkamra12/InferGate-API-Gateway" target="_blank" class="proj-row">
+                    <div class="proj-meta">02 — API INFRA</div>
+                    <div class="proj-info">
+                        <h3 class="proj-name">INFERGATE</h3>
+                        <p class="proj-desc">Production-grade AI request router orchestrating 5 microservices via Docker Compose. Implements Redis sliding-window rate limiting and distributed tracing.</p>
+                    </div>
+                    <div class="proj-tags">TYPESCRIPT<br>REDIS<br>DOCKER</div>
+                </a>
+
+                <a href="https://github.com/vanshkamra12/codebase-analyzer-cli" target="_blank" class="proj-row">
+                    <div class="proj-meta">03 — DEV TOOL</div>
+                    <div class="proj-info">
+                        <h3 class="proj-name">CODEBASE ANALYZER</h3>
+                        <p class="proj-desc">Static analysis CLI engine extracting functions and call edges to compute McCabe complexity across massive Python repositories.</p>
+                    </div>
+                    <div class="proj-tags">PYTHON<br>AST<br>RICH</div>
+                </a>
+
+                <a href="https://github.com/vanshkamra12/CyberThreat-Intel-LLM" target="_blank" class="proj-row">
+                    <div class="proj-meta">04 — APPLIED AI</div>
+                    <div class="proj-info">
+                        <h3 class="proj-name">CYBERTHREAT INTEL</h3>
+                        <p class="proj-desc">Specialized SecOps Model fine-tuned on Phi-3-mini (3.8B) using QLoRA. Generates structured MITRE ATT&CK mappings from raw CVE data.</p>
+                    </div>
+                    <div class="proj-tags">PYTORCH<br>QLORA<br>HUGGINGFACE</div>
+                </a>
+
+                <a href="https://github.com/vanshkamra12/docquery-ai" target="_blank" class="proj-row">
+                    <div class="proj-meta">05 — RAG PIPELINE</div>
+                    <div class="proj-info">
+                        <h3 class="proj-name">DOCQUERY AI</h3>
+                        <p class="proj-desc">AI-powered document Q&A system utilizing ChromaDB for vector storage and Google Gemini for semantic search.</p>
+                    </div>
+                    <div class="proj-tags">CHROMADB<br>GEMINI<br>STREAMLIT</div>
+                </a>
+
+            </div>
+        </div>
+    </section>
+
+
+
+    <section id="contact" class="panel">
+        <div class="container" style="text-align: center;">
+            <h2 class="sec-title" style="margin-bottom: 0;">INITIATE CONTACT</h2>
+            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=vanshkamra27@gmail.com" target="_blank" class="email-huge">VANSHKAMRA27@GMAIL.COM</a>
+        </div>
+    </section>
+
+    <footer>
+        <div>© 2024 VANSH KAMRA</div>
+        <div class="socials">
+            <a href="https://github.com/vanshkamra12" target="_blank">GITHUB</a>
+            <a href="https://linkedin.com/in/vanshkamra12" target="_blank">LINKEDIN</a>
+            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=vanshkamra27@gmail.com" target="_blank">EMAIL</a>
+        </div>
+    </footer>
+
+    <script>
+        // ----------------------------------------------------
+        // SMOOTH SCROLL (LENIS)
+        // ----------------------------------------------------
+        const lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            direction: 'vertical',
+            gestureDirection: 'vertical',
+            smooth: true,
+        })
+        function raf(time) {
+            lenis.raf(time)
+            requestAnimationFrame(raf)
+        }
+        requestAnimationFrame(raf)
+
+        document.querySelectorAll('a[href^="#"]').forEach(a => {
+            a.addEventListener('click', e => {
+                const target = a.getAttribute('href');
+                if (target === '#') return;
+                const el = document.querySelector(target);
+                if (el) { e.preventDefault(); lenis.scrollTo(el, { offset: 0, duration: 1.2 }); }
+            });
+        });
+
+        // ----------------------------------------------------
+        // CUSTOM CURSOR
+        // ----------------------------------------------------
+        const dot = document.getElementById('cursor-dot');
+        const ring = document.getElementById('cursor-ring');
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+        let ringX = mouseX, ringY = mouseY;
+
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            dot.style.left = `${mouseX}px`;
+            dot.style.top = `${mouseY}px`;
+        });
+
+        function animateCursor() {
+            ringX += (mouseX - ringX) * 0.2;
+            ringY += (mouseY - ringY) * 0.2;
+            ring.style.left = `${ringX}px`;
+            ring.style.top = `${ringY}px`;
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+        // Hover Effects
+        const interactiveElements = document.querySelectorAll('a, .skill-item, .proj-row, .award-row');
+        interactiveElements.forEach(el => {
+            el.addEventListener('mouseenter', () => ring.classList.add('hover'));
+            el.addEventListener('mouseleave', () => ring.classList.remove('hover'));
+        });
+
+        // ----------------------------------------------------
+        // THREE.JS OUT-OF-THE-BOX SCENE (INTERACTIVE SWARM)
+        // ----------------------------------------------------
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color('#000000'); // Deep dark mode
+
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+        camera.position.z = 15;
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        container.appendChild(renderer.domElement);
+
+        // 1. Lighting: Moody & Dramatic
+        const ambient = new THREE.AmbientLight(0xffffff, 0.1);
+        scene.add(ambient);
+
+        const dirLight = new THREE.DirectionalLight(0xffffff, 2.0);
+        dirLight.position.set(10, 20, 10);
+        scene.add(dirLight);
+
+        // 2. The Instanced Swarm (Torus Knot Formation)
+        const count = 6000;
+        const dummy = new THREE.Object3D();
+        const color = new THREE.Color();
+        const geometry = new THREE.BoxGeometry(0.12, 0.12, 0.12);
+
+        // Dark, premium brushed metal
+        const material = new THREE.MeshStandardMaterial({
+            color: 0xffffff,
+            metalness: 0.9,
+            roughness: 0.2
+        });
+
+        const instancedMesh = new THREE.InstancedMesh(geometry, material, count);
+        scene.add(instancedMesh);
+
+        window.morphFactor = { value: 0 };
+        const cubes = [];
+        let gridIndex = 0;
+        const gridDimX = 20, gridDimY = 20, gridDimZ = 15;
+        const spacing = 0.5;
+
+        for (let i = 0; i < count; i++) {
+            // Generate mathematical Torus Knot points
+            const u = Math.random() * Math.PI * 2;
+            const v = Math.random() * Math.PI * 2;
+
+            const p = 3, q = 4;
+            const r = Math.cos(q * u) + 2;
+            const x = r * Math.cos(p * u) * 1.5;
+            const y = r * Math.sin(p * u) * 1.5;
+            const z = -Math.sin(q * u) * 1.5;
+
+            // Add spread for volumetric thickness
+            const spread = 0.8;
+            const bx = x + (Math.random() - 0.5) * spread;
+            const by = y + (Math.random() - 0.5) * spread;
+            const bz = z + (Math.random() - 0.5) * spread;
+
+            // Generate Grid points (Neural Network shape)
+            let gx = (gridIndex % gridDimX) - (gridDimX / 2);
+            let gy = (Math.floor(gridIndex / gridDimX) % gridDimY) - (gridDimY / 2);
+            let gz = (Math.floor(gridIndex / (gridDimX * gridDimY))) - (gridDimZ / 2);
+            gx *= spacing;
+            gy *= spacing;
+            gz *= spacing;
+            gx += (Math.random() - 0.5) * 0.2;
+            gy += (Math.random() - 0.5) * 0.2;
+            gz += (Math.random() - 0.5) * 0.2;
+            gridIndex++;
+
+            cubes.push({
+                baseX: bx, baseY: by, baseZ: bz,
+                gridX: gx, gridY: gy, gridZ: gz,
+                x: bx, y: by, z: bz,
+                vx: 0, vy: 0, vz: 0,
+                rx: Math.random() * Math.PI,
+                ry: Math.random() * Math.PI,
+                rz: Math.random() * Math.PI
+            });
+
+            // 85% Obsidian Metal, 15% Stark White Glow
+            const isWhite = Math.random() > 0.85;
+            color.setHex(isWhite ? 0xffffff : 0x050505);
+            instancedMesh.setColorAt(i, color);
+        }
+        instancedMesh.instanceColor.needsUpdate = true;
+
+        // Resize Handling
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // 3. Mouse Interaction Logic
+        const raycaster = new THREE.Raycaster();
+        const mouseVec = new THREE.Vector2(-9999, -9999);
+        const plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+        const pointer = new THREE.Vector3();
+
+        window.addEventListener('mousemove', (e) => {
+            mouseVec.x = (e.clientX / window.innerWidth) * 2 - 1;
+            mouseVec.y = -(e.clientY / window.innerHeight) * 2 + 1;
+        });
+
+        const clock = new THREE.Clock();
+        let isTabActive = true;
+        document.addEventListener('visibilitychange', () => {
+            isTabActive = !document.hidden;
+        });
+
+        function animate() {
+            requestAnimationFrame(animate);
+            if (!isTabActive) return; // Battery optimization: pause WebGL when tab is inactive
+            
+            const time = clock.getElapsedTime();
+
+            // Find 3D coordinate of mouse
+            raycaster.setFromCamera(mouseVec, camera);
+            raycaster.ray.intersectPlane(plane, pointer);
+            instancedMesh.worldToLocal(pointer); // Adjust for mesh rotation
+
+            // Physics Loop for Swarm
+            for (let i = 0; i < count; i++) {
+                const cube = cubes[i];
+
+                // Repulsion
+                const dx = cube.x - pointer.x;
+                const dy = cube.y - pointer.y;
+                const dz = cube.z - pointer.z;
+                const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+
+                let fx = 0, fy = 0, fz = 0;
+                const maxDist = 3.0; // Radius of interaction
+
+                if (dist < maxDist) {
+                    const force = (maxDist - dist) * 0.02; // Strength of explosion
+                    fx += (dx / dist) * force;
+                    fy += (dy / dist) * force;
+                    fz += (dz / dist) * force;
+                }
+
+                // Spring back to target formation (morphs based on scroll)
+                const targetX = cube.baseX * (1 - window.morphFactor.value) + cube.gridX * window.morphFactor.value;
+                const targetY = cube.baseY * (1 - window.morphFactor.value) + cube.gridY * window.morphFactor.value;
+                const targetZ = cube.baseZ * (1 - window.morphFactor.value) + cube.gridZ * window.morphFactor.value;
+
+                fx += (targetX - cube.x) * 0.04;
+                fy += (targetY - cube.y) * 0.04;
+                fz += (targetZ - cube.z) * 0.04;
+
+                // Velocity & Damping
+                cube.vx = (cube.vx + fx) * 0.88;
+                cube.vy = (cube.vy + fy) * 0.88;
+                cube.vz = (cube.vz + fz) * 0.88;
+
+                cube.x += cube.vx;
+                cube.y += cube.vy;
+                cube.z += cube.vz;
+
+                // Rotate individual cubes based on movement
+                cube.rx += cube.vx * 0.5;
+                cube.ry += cube.vy * 0.5;
+
+                dummy.position.set(cube.x, cube.y, cube.z);
+                dummy.rotation.set(cube.rx, cube.ry, cube.rz);
+                dummy.updateMatrix();
+                instancedMesh.setMatrixAt(i, dummy.matrix);
+            }
+            instancedMesh.instanceMatrix.needsUpdate = true;
+
+            // Slowly rotate the entire Torus Knot
+            instancedMesh.rotation.y = time * 0.1;
+            instancedMesh.rotation.x = time * 0.05;
+
+            // Subtle Camera Parallax
+            camera.position.x += (mouseVec.x * 1.5 - camera.position.x) * 0.05;
+            camera.position.y += (mouseVec.y * 1.5 - camera.position.y) * 0.05;
+            camera.lookAt(scene.position);
+
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // ----------------------------------------------------
+        // GSAP SCROLL ANIMATIONS (PARALLAX SWARM)
+        // ----------------------------------------------------
+        gsap.registerPlugin(ScrollTrigger);
+        lenis.on('scroll', ScrollTrigger.update);
+
+        const isMobile = window.innerWidth < 1024;
+
+        if (!isMobile) {
+            // Hero -> About: Move Swarm Right
+            gsap.to(instancedMesh.position, {
+                x: 5, y: 0,
+                scrollTrigger: {
+                    trigger: "#about",
+                    start: "top bottom",
+                    end: "top center",
+                    scrub: 1
+                }
+            });
+
+            // About -> Skills: Move Swarm Left AND Morph to Grid
+            gsap.to(instancedMesh.position, {
+                x: -5, y: 0,
+                scrollTrigger: {
+                    trigger: "#skills",
+                    start: "top bottom",
+                    end: "top center",
+                    scrub: 1
+                }
+            });
+            gsap.to(window.morphFactor, {
+                value: 1,
+                scrollTrigger: {
+                    trigger: "#skills",
+                    start: "top bottom",
+                    end: "top center",
+                    scrub: 1
+                }
+            });
+
+            // Skills -> Projects: Move Center, Scale Down, Push Back AND Morph to Swarm
+            gsap.to(instancedMesh.position, {
+                x: 0, y: 3, z: -10,
+                scrollTrigger: {
+                    trigger: "#projects",
+                    start: "top bottom",
+                    end: "bottom center",
+                    scrub: 1
+                }
+            });
+            gsap.to(instancedMesh.scale, {
+                x: 0.5, y: 0.5, z: 0.5,
+                scrollTrigger: {
+                    trigger: "#projects",
+                    start: "top bottom",
+                    end: "bottom center",
+                    scrub: 1
+                }
+            });
+            gsap.to(window.morphFactor, {
+                value: 0,
+                scrollTrigger: {
+                    trigger: "#projects",
+                    start: "top bottom",
+                    end: "top center",
+                    scrub: 1
+                }
+            });
+
+            // Projects -> Contact: Engulf the screen
+            gsap.to(instancedMesh.position, {
+                x: 0, y: 0, z: 5,
+                scrollTrigger: {
+                    trigger: "#contact",
+                    start: "top bottom",
+                    end: "bottom bottom",
+                    scrub: 1
+                }
+            });
+            gsap.to(instancedMesh.scale, {
+                x: 1.5, y: 1.5, z: 1.5,
+                scrollTrigger: {
+                    trigger: "#contact",
+                    start: "top bottom",
+                    end: "bottom bottom",
+                    scrub: 1
+                }
+            });
+        }
+
+        // ----------------------------------------------------
+        // MAGNETIC HOVER EFFECT (Premium UX)
+        // ----------------------------------------------------
+        const magnetics = document.querySelectorAll('.nav-links a, .email-huge');
+        magnetics.forEach(btn => {
+            btn.addEventListener('mousemove', (e) => {
+                const rect = btn.getBoundingClientRect();
+                const h = rect.width / 2;
+                const w = rect.height / 2;
+                const x = e.clientX - rect.left - h;
+                const y = e.clientY - rect.top - w;
+                
+                gsap.to(btn, {
+                    x: x * 0.3,
+                    y: y * 0.3,
+                    duration: 0.4,
+                    ease: "power2.out"
+                });
+            });
+            btn.addEventListener('mouseleave', () => {
+                gsap.to(btn, {
+                    x: 0,
+                    y: 0,
+                    duration: 0.4,
+                    ease: "elastic.out(1, 0.3)"
+                });
+            });
+        });
+
+        // HTML Content Reveal
+        gsap.utils.toArray('.sec-title, .about-text p, .stats-row, .skills-grid, .proj-row, .email-huge').forEach(el => {
+            gsap.from(el, {
+                y: 40,
+                opacity: 0,
+                duration: 1,
+                ease: "power3.out",
+                scrollTrigger: {
+                    trigger: el,
+                    start: "top 85%",
+                    toggleActions: "play none none reverse"
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
