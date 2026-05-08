@@ -90,7 +90,11 @@
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
         }
 
-        .tilt-card { transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); transform-style: preserve-3d; }
+        .tilt-card { 
+            transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); 
+            transform-style: preserve-3d; 
+            will-change: transform;
+        }
         .panel { position: relative; z-index: 2; }
         .marquee-inner { display: flex; width: max-content; animation: marquee 30s linear infinite; }
         @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
@@ -518,7 +522,17 @@
         animate(0);
 
         // 4. ANIMATIONS & SCROLL
-        const lenis = new Lenis();
+        const lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            orientation: 'vertical',
+            gestureOrientation: 'vertical',
+            smoothWheel: true,
+            wheelMultiplier: 1,
+            smoothTouch: false,
+            touchMultiplier: 2,
+            infinite: false,
+        });
         function scrollRaf(time) { lenis.raf(time); requestAnimationFrame(scrollRaf); }
         requestAnimationFrame(scrollRaf);
 
@@ -536,7 +550,12 @@
 
             gsap.to(morphState, {
                 progress: 3,
-                scrollTrigger: { trigger: "main", start: "top top", end: "bottom bottom", scrub: 1.5 }
+                scrollTrigger: { 
+                    trigger: "main", 
+                    start: "top top", 
+                    end: "bottom bottom", 
+                    scrub: 2.5 
+                }
             });
             
             document.querySelectorAll('.tilt-card-wrapper').forEach(card => {
