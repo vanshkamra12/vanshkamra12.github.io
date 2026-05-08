@@ -1,1071 +1,555 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vansh Kamra | AI/ML Engineer</title>
-
+    <title>VANSH KAMRA — AI/ML & Backend Architect</title>
+    
     <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600&display=swap"
-        rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700;900&family=Manrope:wght@300;400;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+    
     <!-- Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
-        /* --------------------------------------
-           BRUTALIST DARK THEME VARIABLES
-        -------------------------------------- */
         :root {
-            --bg: #000000;
+            --bg: #020202;
+            --surface: #0b0b0d;
+            --primary: #d036ff;
+            --secondary: #00f0ff;
             --text: #ffffff;
-            --muted: #777777;
-            --border: rgba(255, 255, 255, 0.12);
-            --accent: #ffffff;
+            --muted: #8a8a92;
+            --border: rgba(255, 255, 255, 0.08);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; cursor: none !important; }
 
         body {
-            background-color: var(--bg);
+            margin: 0; padding: 0;
+            background: #020202;
             color: var(--text);
-            font-family: 'Inter', sans-serif;
+            font-family: "Manrope", sans-serif;
             overflow-x: hidden;
-            cursor: none;
-            /* Custom cursor */
-            -webkit-font-smoothing: antialiased;
         }
 
-        ::-webkit-scrollbar {
-            width: 0px;
-        }
+        .font-display { font-family: "Unbounded", sans-serif; letter-spacing: -0.03em; }
+        .font-mono { font-family: "JetBrains Mono", monospace; }
 
-        ::selection {
-            background: #ffffff;
-            color: #000000;
-        }
-
-        /* --------------------------------------
-           CUSTOM CURSOR
-        -------------------------------------- */
+        /* Custom Cursor */
         .cursor-dot {
-            width: 4px;
-            height: 4px;
-            background: #fff;
-            border-radius: 50%;
-            position: fixed;
-            pointer-events: none;
-            z-index: 10000;
-            transform: translate(-50%, -50%);
-            mix-blend-mode: difference;
+            position: fixed; top: 0; left: 0; width: 6px; height: 6px;
+            background: #fff; border-radius: 50%; z-index: 10000;
+            pointer-events: none; mix-blend-mode: difference;
         }
-
         .cursor-ring {
-            width: 30px;
-            height: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            border-radius: 0;
-            /* Sharp square cursor for brutalist feel */
-            position: fixed;
-            pointer-events: none;
-            z-index: 9999;
-            transform: translate(-50%, -50%) rotate(45deg);
-            transition: width 0.3s, height 0.3s, background-color 0.3s, transform 0.3s;
-            mix-blend-mode: difference;
+            position: fixed; top: 0; left: 0; width: 36px; height: 36px;
+            border: 1px solid rgba(255, 255, 255, 0.7); border-radius: 50%;
+            z-index: 10000; pointer-events: none; mix-blend-mode: difference;
+            transition: width 0.3s, height 0.3s, border-color 0.3s;
         }
 
-        .cursor-ring.hover {
-            width: 60px;
-            height: 60px;
-            background-color: rgba(255, 255, 255, 0.1);
-            transform: translate(-50%, -50%) rotate(0deg);
+        /* Loader */
+        #loader {
+            position: fixed; inset: 0; background: #020202; z-index: 99999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
 
-        /* --------------------------------------
-           WEBGL CANVAS
-        -------------------------------------- */
-        #canvas-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: 0;
-            pointer-events: none;
+        .iridescent {
+            background: linear-gradient(92deg, #ffffff 0%, #d036ff 30%, #00f0ff 55%, #ffffff 80%);
+            background-size: 200% auto;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            animation: iridescent-shift 8s linear infinite;
+        }
+        @keyframes iridescent-shift {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
         }
 
-        /* --------------------------------------
-           NAVIGATION
-        -------------------------------------- */
-        nav {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            padding: 2.5rem 5vw;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 100;
-            mix-blend-mode: difference;
+        .outline-text {
+            -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.5);
+            color: transparent;
         }
 
-        .logo {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.5rem;
-            font-weight: 800;
-            letter-spacing: -1px;
-            text-decoration: none;
-            color: #fff;
+        .noise-overlay {
+            position: fixed; inset: 0; pointer-events: none; z-index: 1; opacity: 0.04;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='n'><feTurbulence baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
         }
 
-        .nav-links {
-            display: flex;
-            gap: 3rem;
-            list-style: none;
-            font-family: 'Space Mono', monospace;
+        #canvas-container { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.015);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
         }
 
-        .nav-links a {
-            text-decoration: none;
-            color: #fff;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: opacity 0.3s;
+        .tilt-card { transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); transform-style: preserve-3d; }
+        .panel { position: relative; z-index: 2; }
+        .marquee-inner { display: flex; width: max-content; animation: marquee 30s linear infinite; }
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        .dot-grid {
+            background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+            background-size: 24px 24px;
         }
 
-        .nav-links a:hover {
-            opacity: 0.5;
-        }
-
-        /* --------------------------------------
-           LAYOUT & PANELS
-        -------------------------------------- */
-        .panel {
-            position: relative;
-            z-index: 1;
-            min-height: 100vh;
-            width: 100%;
-            padding: 15vh 5vw;
-            display: flex;
-            align-items: center;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        /* --------------------------------------
-           TYPOGRAPHY
-        -------------------------------------- */
-        h1,
-        h2,
-        h3 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 800;
-            letter-spacing: -0.05em;
-            color: #fff;
-        }
-
-        p {
-            font-size: 1.2rem;
-            line-height: 1.6;
-            color: var(--muted);
-        }
-
-        .sec-title {
-            font-size: clamp(3rem, 6vw, 6rem);
-            margin-bottom: 3rem;
-            line-height: 1;
-            text-transform: uppercase;
-        }
-
-        /* --------------------------------------
-           HERO SECTION
-        -------------------------------------- */
-        .hero-title {
-            font-size: clamp(4rem, 13vw, 16rem);
-            line-height: 0.85;
-            text-transform: uppercase;
-            mix-blend-mode: difference;
-            position: relative;
-            z-index: 2;
-        }
-
-        .hero-meta {
-            display: flex;
-            gap: 3rem;
-            margin-top: 4rem;
-            font-family: 'Space Mono', monospace;
-            font-size: 0.9rem;
-            letter-spacing: 2px;
-            color: #fff;
-            border-top: 1px solid var(--border);
-            padding-top: 1.5rem;
-            max-width: 800px;
-            mix-blend-mode: difference;
-        }
-
-        /* --------------------------------------
-           ABOUT SECTION
-        -------------------------------------- */
-        #about .grid-layout {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 5rem;
-        }
-
-        .about-text p {
-            margin-bottom: 2rem;
-        }
-
-        .stats-row {
-            display: flex;
-            gap: 4rem;
-            margin-top: 4rem;
-            padding-top: 2rem;
-            border-top: 1px solid var(--border);
-        }
-
-        .stat-block .num {
-            font-family: 'Space Mono', monospace;
-            font-size: 3rem;
-            color: #fff;
-            line-height: 1;
-        }
-
-        .stat-block .lbl {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 0.85rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-top: 1rem;
-            color: var(--muted);
-        }
-
-        /* --------------------------------------
-           SKILLS SECTION
-        -------------------------------------- */
-        #skills .grid-layout {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 5rem;
-        }
-
-        .skills-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            margin-top: 3rem;
-        }
-
-        .skill-item {
-            font-family: 'Space Mono', monospace;
-            font-size: 0.9rem;
-            padding: 1.2rem 2rem;
-            border: 1px solid var(--border);
-            color: #fff;
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(5px);
-            transition: all 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .skill-item:hover {
-            background: #fff;
-            color: #000;
-            transform: translateX(10px);
-        }
-
-        /* --------------------------------------
-           PROJECTS SECTION
-        -------------------------------------- */
-        .proj-list {
-            border-top: 1px solid var(--border);
-            margin-top: 4rem;
-        }
-
-        .proj-row {
-            display: grid;
-            grid-template-columns: 1fr 3fr 1.5fr;
-            gap: 2rem;
-            padding: 4rem 0;
-            border-bottom: 1px solid var(--border);
-            transition: all 0.4s ease;
-            text-decoration: none;
-            color: inherit;
-            align-items: center;
-        }
-
-        .proj-row:hover {
-            background: rgba(255, 255, 255, 0.02);
-            padding-left: 2rem;
-            padding-right: 2rem;
-        }
-
-        .proj-meta {
-            font-family: 'Space Mono', monospace;
-            color: var(--muted);
-            font-size: 1rem;
-        }
-
-        .proj-name {
-            font-size: clamp(2rem, 3vw, 3rem);
-            margin-bottom: 1rem;
-        }
-
-        .proj-desc {
-            color: var(--muted);
-            font-size: 1.1rem;
-            line-height: 1.6;
-        }
-
-        .proj-tags {
-            font-family: 'Space Mono', monospace;
-            text-align: right;
-            color: var(--muted);
-            font-size: 0.85rem;
-            line-height: 1.8;
-        }
-
-        /* --------------------------------------
-           AWARDS SECTION
-        -------------------------------------- */
-        .awards-list {
-            border-top: 1px solid var(--border);
-            margin-top: 4rem;
-        }
-
-        .award-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 3rem 0;
-            border-bottom: 1px solid var(--border);
-            transition: all 0.4s ease;
-        }
-
-        .award-row:hover {
-            background: rgba(255, 255, 255, 0.02);
-            padding-left: 2rem;
-            padding-right: 2rem;
-        }
-
-        .award-name {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .award-desc {
-            color: var(--muted);
-            font-size: 1.1rem;
-        }
-
-        .award-year {
-            font-family: 'Space Mono', monospace;
-            color: #fff;
-            font-size: 1.1rem;
-        }
-
-        /* --------------------------------------
-           CONTACT SECTION
-        -------------------------------------- */
-        #contact {
-            justify-content: center;
-            text-align: center;
-            min-height: 80vh;
-        }
-
-        .email-huge {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: clamp(1.5rem, 5vw, 6rem);
-            font-weight: 800;
-            letter-spacing: -0.05em;
-            color: #fff;
-            text-decoration: none;
-            position: relative;
-            display: inline-block;
-            margin-top: 2rem;
-            transition: opacity 0.3s;
-        }
-
-        .email-huge::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0%;
-            height: 4px;
-            background: #fff;
-            transition: width 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-        }
-
-        .email-huge:hover::after {
-            width: 100%;
-        }
-
-        .email-huge:hover {
-            opacity: 0.8;
-        }
-
-        /* --------------------------------------
-           FOOTER
-        -------------------------------------- */
-        footer {
-            padding: 3rem 5vw;
-            display: flex;
-            justify-content: space-between;
-            border-top: 1px solid var(--border);
-            font-family: 'Space Mono', monospace;
-            font-size: 0.85rem;
-            color: var(--muted);
-            position: relative;
-            z-index: 1;
-        }
-
-        .socials {
-            display: flex;
-            gap: 3rem;
-        }
-
-        .socials a {
-            color: var(--muted);
-            text-decoration: none;
-            transition: color 0.3s;
-            text-transform: uppercase;
-        }
-
-        .socials a:hover {
-            color: #fff;
-        }
-
-        /* --------------------------------------
-           RESPONSIVE
-        -------------------------------------- */
-        @media (max-width: 1024px) {
-
-            #about .grid-layout,
-            #skills .grid-layout {
-                grid-template-columns: 1fr;
-                gap: 4rem;
-            }
-
-            .proj-row {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-                padding: 3rem 0;
-            }
-
-            .proj-tags {
-                text-align: left;
-            }
-
-            .hero-meta {
-                flex-direction: column;
-                gap: 1rem;
-            }
-        }
-
-        @media (max-width: 768px) {
-            nav {
-                padding: 1.5rem 5vw;
-            }
-
-            .nav-links {
-                display: none;
-            }
-
-            .stats-row {
-                flex-direction: column;
-                gap: 2rem;
-            }
-
-            .award-row {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 1rem;
-                padding: 2.5rem 0;
-            }
-
-            footer {
-                flex-direction: column;
-                gap: 2rem;
-                align-items: flex-start;
-            }
-
-            .socials {
-                flex-wrap: wrap;
-                gap: 1.5rem;
-            }
-
-            .cursor-dot,
-            .cursor-ring {
-                display: none;
-            }
-
-            body {
-                cursor: auto;
-            }
-        }
     </style>
 </head>
-
 <body>
 
-    <!-- Custom Cursor -->
-    <div class="cursor-dot" id="cursor-dot"></div>
-    <div class="cursor-ring" id="cursor-ring"></div>
-
-    <!-- WebGL Background -->
+    <div class="cursor-dot"></div>
+    <div class="cursor-ring"></div>
+    <div class="noise-overlay"></div>
     <div id="canvas-container"></div>
 
+    <!-- Loader -->
+    <div id="loader">
+        <div class="absolute inset-0 dot-grid opacity-40"></div>
+        <div class="relative flex flex-col items-center gap-8 px-6 text-center">
+            <div class="font-mono text-[10px] tracking-[0.3em] text-white/50 uppercase">Syncing Neural Context</div>
+            <div class="font-display text-5xl md:text-8xl font-black uppercase leading-none">
+                <span class="iridescent">Vansh</span> <span class="outline-text">Kamra</span>
+            </div>
+            <div class="w-[60vw] max-w-[480px] h-[1px] bg-white/10 relative overflow-hidden">
+                <div id="loader-bar" class="absolute inset-y-0 left-0 bg-gradient-to-r from-[#d036ff] to-[#00f0ff] w-0"></div>
+            </div>
+            <div class="flex w-[60vw] max-w-[480px] justify-between font-mono text-[10px] text-white/60">
+                <span id="loader-percent">000 / 100</span>
+                <span>SYSTEM.ACTIVE</span>
+            </div>
+        </div>
+    </div>
+
     <!-- Navigation -->
-    <nav>
-        <a href="#" class="logo">VK.</a>
-        <ul class="nav-links">
-            <li><a href="#about">About</a></li>
-            <li><a href="#skills">Skills</a></li>
-            <li><a href="#projects">Work</a></li>
-            <li><a href="#contact">Contact</a></li>
-        </ul>
+    <nav class="fixed top-0 left-0 right-0 z-50 py-8 transition-all duration-500" id="navbar">
+        <div class="mx-auto max-w-[1440px] px-6 md:px-10 flex items-center justify-between">
+            <a href="#hero" class="group relative z-[100]">
+                <div class="font-display text-lg font-black tracking-tighter lowercase text-white/90 group-hover:text-[#d036ff] transition-colors">vansh.kamra</div>
+            </a>
+            <ul class="hidden md:flex items-center gap-1 glass rounded-full px-2 py-2">
+                <li><a href="#hero" class="font-mono text-[10px] uppercase tracking-[0.2em] px-4 py-2 rounded-full hover:bg-white/10 text-white/70">01 Index</a></li>
+                <li><a href="#about" class="font-mono text-[10px] uppercase tracking-[0.2em] px-4 py-2 rounded-full hover:bg-white/10 text-white/70">02 Manifesto</a></li>
+                <li><a href="#works" class="font-mono text-[10px] uppercase tracking-[0.2em] px-4 py-2 rounded-full hover:bg-white/10 text-white/70">03 Works</a></li>
+                <li><a href="#contact" class="font-mono text-[10px] uppercase tracking-[0.2em] px-4 py-2 rounded-full hover:bg-white/10 text-white/70">04 Signal</a></li>
+            </ul>
+            <div class="hidden md:flex items-center gap-3">
+                <div class="font-mono text-[10px] text-white/50" id="utc-time">UTC 00:00:00</div>
+                <a href="#contact" class="relative inline-flex items-center gap-2 rounded-full bg-white text-black px-5 py-2 font-mono text-[10px] uppercase tracking-[0.2em] hover:bg-[#d036ff] hover:text-white transition-all">
+                    <span class="w-1.5 h-1.5 rounded-full bg-[#00f0ff] animate-pulse"></span> Available
+                </a>
+            </div>
+        </div>
     </nav>
 
-    <!-- Sections -->
-    <section id="hero" class="panel">
-        <div class="container">
-            <h1 class="hero-title">VANSH<br>KAMRA</h1>
-            <div class="hero-meta">
-                <span>AI / ML ENGINEER</span>
-                <span>BACKEND SYSTEMS</span>
-                <span>BASED IN INDIA</span>
+    <main>
+        <!-- Hero Section -->
+        <section id="hero" class="relative h-screen w-full flex flex-col justify-between py-32 px-6 md:px-10 panel">
+            <div class="flex items-start justify-between font-mono text-[10px] text-white/60 tracking-[0.2em] uppercase">
+                <div class="flex flex-col gap-1">
+                    <span class="text-white/30">[ Portfolio · 2026 ]</span>
+                    <span>v2.0 // signal_active</span>
+                </div>
+                <div class="hidden md:flex flex-col items-end gap-1 text-right">
+                    <span class="text-white/30">[ Coordinates ]</span>
+                    <span>Backend · AI · India</span>
+                </div>
+            </div>
+
+            <div class="relative z-10 text-center md:text-left">
+                <h1 class="font-display text-[14vw] md:text-[11vw] leading-[0.85] font-black uppercase tracking-tighter">
+                    Building<br>
+                    <span class="iridescent">Scalable</span><br>
+                    <span class="outline-text">Intelligence</span>
+                </h1>
+            </div>
+
+            <div class="flex items-end justify-between flex-wrap gap-6">
+                <div class="max-w-md text-left">
+                    <p class="font-mono text-[10px] text-white/50 uppercase tracking-[0.25em] mb-3">· The Architect</p>
+                    <p class="text-white/80 text-lg font-light leading-relaxed">
+                        <span class="font-display font-bold text-white">Vansh Kamra</span> — backend technologist engineering the invisible nervous systems of modern AI.
+                    </p>
+                </div>
+                <a href="#works" class="group inline-flex items-center gap-3 rounded-full border border-white/20 px-8 py-4 hover:bg-white hover:text-black transition-all">
+                    <span class="font-mono text-[10px] uppercase tracking-[0.25em]">Explore Field</span>
+                    <i data-lucide="arrow-down-right" class="w-4 h-4 transition-transform group-hover:rotate-45"></i>
+                </a>
+            </div>
+        </section>
+
+        <!-- Marquee -->
+        <div class="py-12 border-y border-white/5 bg-[#0b0b0d]/40 overflow-hidden panel">
+            <div class="marquee-inner">
+                <div class="flex items-center gap-20 px-10">
+                    <span class="font-display text-4xl md:text-6xl font-black uppercase tracking-tighter">Backend · Distributed Systems · AI Infrastructure · </span>
+                    <span class="text-[#d036ff] text-3xl">◆</span>
+                </div>
+                <div class="flex items-center gap-20 px-10">
+                    <span class="font-display text-4xl md:text-6xl font-black uppercase tracking-tighter">Backend · Distributed Systems · AI Infrastructure · </span>
+                    <span class="text-[#d036ff] text-3xl">◆</span>
+                </div>
             </div>
         </div>
-    </section>
 
-    <section id="about" class="panel">
-        <div class="container">
-            <div class="grid-layout">
-                <div></div> <!-- Empty for 3D Swarm -->
-                <div class="content">
-                    <h2 class="sec-title">THE ARCHITECTURE<br>OF INTELLIGENCE.</h2>
-                    <p>I build intelligent systems that adapt and scale. From predictive models to multi-agent LLM
-                        orchestrators, my focus is at the bleeding edge of machine learning and applied AI.</p>
-                    <p>I engineer robust, data-driven architectures that transform complex datasets into actionable,
-                        real-time insights, shipping models that solve actual human problems.</p>
-
-                    <div class="stats-row">
-                        <div class="stat-block">
-                            <div class="num">05+</div>
-                            <div class="lbl">PRODUCTION SYSTEMS</div>
+        <!-- About/Manifesto -->
+        <section id="about" class="py-32 md:py-64 px-6 md:px-10 panel">
+            <div class="mx-auto max-w-[1440px] grid grid-cols-1 md:grid-cols-12 gap-12">
+                <div class="md:col-span-4">
+                    <div class="font-mono text-[10px] tracking-[0.3em] uppercase text-white/50 mb-6">· 02 — Manifesto</div>
+                    <h2 class="font-display text-5xl md:text-7xl font-black uppercase tracking-tighter leading-[0.9]">Beyond<br>The<br><span class="iridescent">Code</span></h2>
+                </div>
+                <div class="md:col-span-7 md:col-start-6 flex flex-col justify-center">
+                    <p class="text-2xl md:text-4xl font-display font-bold uppercase tracking-tighter leading-tight mb-8">
+                        I treat <span class="iridescent">Architecture</span> like a sculpture studio. Every pixel of data is <span class="outline-text">a performance rebellion</span>.
+                    </p>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-8 mt-12 border-t border-white/10 pt-12">
+                        <div>
+                            <div class="font-mono text-[10px] uppercase tracking-[0.2em] text-white/40 mb-2">Systems Shipped</div>
+                            <div class="font-display text-4xl font-bold">12+</div>
                         </div>
-                        <div class="stat-block">
-                            <div class="num">10+</div>
-                            <div class="lbl">ML MODELS TRAINED</div>
+                        <div>
+                            <div class="font-mono text-[10px] uppercase tracking-[0.2em] text-white/40 mb-2">Uptime Target</div>
+                            <div class="font-display text-4xl font-bold">99.9%</div>
                         </div>
-                        <div class="stat-block">
-                            <div class="num">100k+</div>
-                            <div class="lbl">REQUESTS ROUTED</div>
+                        <div>
+                            <div class="font-mono text-[10px] uppercase tracking-[0.2em] text-white/40 mb-2">Latency AVG</div>
+                            <div class="font-display text-4xl font-bold">40ms</div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <section id="skills" class="panel">
-        <div class="container">
-            <div class="grid-layout">
-                <div class="content">
-                    <h2 class="sec-title">CORE<br>PROTOCOLS.</h2>
-                    <p>A brutalist, no-nonsense stack. I leverage modern frameworks and low-level tools to build highly concurrent backends, distributed systems, and scalable AI infrastructure.</p>
+        <!-- Works / Bento Grid -->
+        <section id="works" class="py-32 px-6 md:px-10 panel">
+            <div class="mx-auto max-w-[1440px]">
+                <div class="mb-20">
+                    <div class="font-mono text-[10px] tracking-[0.3em] uppercase text-white/50 mb-4">· 03 — Records</div>
+                    <h2 class="font-display text-5xl md:text-7xl font-black uppercase tracking-tighter">Field <span class="outline-text">Artifacts</span></h2>                <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+                    <!-- Project 1: FRAUDSHIELD (60% Width) -->
+                    <div class="md:col-span-7 relative tilt-card-wrapper group">
+                        <a href="https://github.com/vanshkamra12/fraudshield-mlops" target="_blank" class="tilt-card glass block w-full h-[450px] rounded-[48px] overflow-hidden p-12 flex flex-col justify-between border border-white/5 hover:border-[#d036ff]/30 transition-all">
+                            <!-- Background Texture: Oversized 'F' -->
+                            <div class="absolute -right-10 -bottom-20 text-[300px] font-display font-black text-white/[0.03] blur-[2px] pointer-events-none select-none">F</div>
+                            <div class="absolute top-0 left-12 right-12 h-[1px] bg-gradient-to-r from-transparent via-[#d036ff]/50 to-transparent"></div>
+                            
+                            <div class="flex justify-between items-start relative z-10">
+                                <div class="font-mono text-[10px] uppercase tracking-[0.4em] text-[#d036ff] font-bold">Project_01</div>
+                                <div class="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-[#d036ff] group-hover:text-black transition-all"><i data-lucide="arrow-up-right" class="w-5 h-5"></i></div>
+                            </div>
+                            <div class="relative z-10">
+                                <div class="font-mono text-[9px] uppercase tracking-[0.2em] text-white/40 mb-4 bg-white/5 inline-block px-3 py-1 rounded-full">MLOps Pipeline</div>
+                                <h3 class="font-display text-5xl md:text-6xl font-black uppercase tracking-tighter mb-4 leading-[0.85]">FRAUD<br>SHIELD</h3>
+                                <p class="text-white/30 max-w-xs font-mono text-[10px] uppercase tracking-widest leading-loose">High-frequency scoring engine with <10ms latency.</p>
+                            </div>
+                        </a>
+                    </div>
 
-                    <div class="skills-grid">
-                        <div class="skill-item">PYTHON</div>
-                        <div class="skill-item">TYPESCRIPT</div>
-                        <div class="skill-item">FASTAPI / NODE.JS</div>
-                        <div class="skill-item">KAFKA</div>
-                        <div class="skill-item">REDIS</div>
-                        <div class="skill-item">DOCKER</div>
-                        <div class="skill-item">POSTGRES & MONGODB</div>
-                        <div class="skill-item">PYTORCH</div>
-                        <div class="skill-item">LANGGRAPH</div>
-                        <div class="skill-item">MLOPS & AIRFLOW</div>
-                        <div class="skill-item">AWS / GCP</div>
+                    <!-- Project 2: INFERGATE (40% Width) -->
+                    <div class="md:col-span-5 relative tilt-card-wrapper group">
+                        <a href="https://github.com/vanshkamra12/InferGate-API-Gateway" target="_blank" class="tilt-card glass block w-full h-[450px] rounded-[48px] overflow-hidden p-12 flex flex-col justify-between border border-white/5 hover:border-[#00f0ff]/30 transition-all">
+                            <!-- Background Texture: Oversized 'I' -->
+                            <div class="absolute -right-5 -top-10 text-[300px] font-display font-black text-white/[0.03] blur-[2px] pointer-events-none select-none">I</div>
+                            <div class="absolute top-0 left-12 right-12 h-[1px] bg-gradient-to-r from-transparent via-[#00f0ff]/50 to-transparent"></div>
+
+                            <div class="flex justify-between items-start relative z-10">
+                                <div class="font-mono text-[10px] uppercase tracking-[0.4em] text-[#00f0ff] font-bold">Project_02</div>
+                                <div class="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-[#00f0ff] group-hover:text-black transition-all"><i data-lucide="arrow-up-right" class="w-5 h-5"></i></div>
+                            </div>
+                            <div class="relative z-10">
+                                <div class="font-mono text-[9px] uppercase tracking-[0.2em] text-white/40 mb-4 bg-white/5 inline-block px-3 py-1 rounded-full">API Infrastructure</div>
+                                <h3 class="font-display text-5xl font-black uppercase tracking-tighter mb-4 leading-[0.85]">INFER<br>GATE</h3>
+                                <p class="text-white/30 font-mono text-[10px] uppercase tracking-widest leading-loose">Distributed Gateway for AI Model inference.</p>
+                            </div>
+                        </a>
+                    </div>
+
+                    <!-- Project 3: CYBERTHREAT INTEL (40% Width) -->
+                    <div class="md:col-span-5 relative tilt-card-wrapper group">
+                        <a href="https://github.com/vanshkamra12/CyberThreat-Intel-LLM" target="_blank" class="tilt-card glass block w-full h-[450px] rounded-[48px] overflow-hidden p-12 flex flex-col justify-between border border-white/5 hover:border-[#d036ff]/30 transition-all">
+                             <!-- Background Texture: Oversized 'C' -->
+                             <div class="absolute -left-10 -bottom-10 text-[300px] font-display font-black text-white/[0.03] blur-[2px] pointer-events-none select-none">C</div>
+                             <div class="absolute top-0 left-12 right-12 h-[1px] bg-gradient-to-r from-transparent via-[#d036ff]/50 to-transparent"></div>
+
+                            <div class="flex justify-between items-start relative z-10">
+                                <div class="font-mono text-[10px] uppercase tracking-[0.4em] text-[#d036ff] font-bold">Project_03</div>
+                                <div class="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-[#d036ff] group-hover:text-black transition-all"><i data-lucide="arrow-up-right" class="w-5 h-5"></i></div>
+                            </div>
+                            <div class="relative z-10">
+                                <div class="font-mono text-[9px] uppercase tracking-[0.2em] text-white/40 mb-4 bg-white/5 inline-block px-3 py-1 rounded-full">Security AI</div>
+                                <h3 class="font-display text-5xl font-black uppercase tracking-tighter mb-4 leading-[0.85]">CYBERTHREAT<br>INTEL</h3>
+                                <p class="text-white/30 font-mono text-[10px] uppercase tracking-widest leading-loose">LLM-powered threat intelligence engine.</p>
+                            </div>
+                        </a>
+                    </div>
+
+                    <!-- Project 4: CODEBASE ANALYZER CLI (70% Width) -->
+                    <div class="md:col-span-7 relative tilt-card-wrapper group">
+                        <a href="https://github.com/vanshkamra12/codebase-analyzer-cli" target="_blank" class="tilt-card glass block w-full h-[450px] rounded-[48px] overflow-hidden p-12 flex flex-col justify-between border border-white/5 hover:border-[#00f0ff]/30 transition-all">
+                             <!-- Background Texture: Oversized 'C' -->
+                             <div class="absolute -right-10 -bottom-10 text-[350px] font-display font-black text-white/[0.03] blur-[2px] pointer-events-none select-none">C</div>
+                             <div class="absolute top-0 left-12 right-12 h-[1px] bg-gradient-to-r from-transparent via-[#00f0ff]/50 to-transparent"></div>
+
+                            <div class="flex justify-between items-start relative z-10">
+                                <div class="font-mono text-[10px] uppercase tracking-[0.4em] text-[#00f0ff] font-bold">Project_04</div>
+                                <div class="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-[#00f0ff] group-hover:text-black transition-all"><i data-lucide="arrow-up-right" class="w-5 h-5"></i></div>
+                            </div>
+                            <div class="relative z-10">
+                                <div class="font-mono text-[9px] uppercase tracking-[0.2em] text-white/40 mb-4 bg-white/5 inline-block px-3 py-1 rounded-full">DevTools CLI</div>
+                                <h3 class="font-display text-5xl md:text-6xl font-black uppercase tracking-tighter mb-4 leading-[0.85]">CODEBASE<br>ANALYZER</h3>
+                                <p class="text-white/30 max-w-sm font-mono text-[10px] uppercase tracking-widest leading-loose">Advanced source code analysis and architectural mapping utility.</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="py-64 px-6 md:px-10 panel">
+            <div class="mx-auto max-w-[1440px] flex flex-col items-center text-center">
+                <div class="font-mono text-[10px] tracking-[0.3em] uppercase text-white/50 mb-8">· 04 — Signal ·</div>
+                <h2 class="font-display text-[10vw] md:text-[8vw] font-black uppercase leading-none mb-12">
+                    Sync the<br>
+                    <span class="iridescent">Signal</span><span class="text-[#d036ff]">.</span>
+                </h2>
+                <div class="flex flex-wrap justify-center gap-10">
+                    <a href="mailto:vanshkamra27@gmail.com" class="group flex flex-col items-center gap-2 relative z-50">
+                        <div class="font-mono text-[10px] uppercase tracking-[0.3em] text-white/40">Direct</div>
+                        <div class="text-2xl font-display font-bold group-hover:text-[#00f0ff] transition-colors">vanshkamra27@gmail.com</div>
+                    </a>
+                    <div class="flex gap-10">
+                        <a href="https://linkedin.com/in/vanshkamra12" target="_blank" class="group flex flex-col items-center gap-2">
+                            <div class="font-mono text-[10px] uppercase tracking-[0.3em] text-white/40">Connect</div>
+                            <div class="text-2xl font-display font-bold group-hover:text-[#d036ff] transition-colors">LinkedIn</div>
+                        </a>
+                        <a href="https://github.com/vanshkamra12" target="_blank" class="group flex flex-col items-center gap-2">
+                            <div class="font-mono text-[10px] uppercase tracking-[0.3em] text-white/40">Explore</div>
+                            <div class="text-2xl font-display font-bold group-hover:text-[#00f0ff] transition-colors">GitHub</div>
+                        </a>
                     </div>
                 </div>
-                <div></div> <!-- Empty for 3D Swarm -->
             </div>
-        </div>
-    </section>
+        </section>
+    </main>
 
-    <section id="projects" class="panel">
-        <div class="container">
-            <h2 class="sec-title">SELECTED WORKS.</h2>
-            <div class="proj-list">
-
-                <a href="https://github.com/vanshkamra12/fraudshield" target="_blank" class="proj-row">
-                    <div class="proj-meta">01 — MLOps</div>
-                    <div class="proj-info">
-                        <h3 class="proj-name">FRAUDSHIELD</h3>
-                        <p class="proj-desc">End-to-end MLOps pipeline processing streaming transactions via Kafka. Features a LightGBM scoring service (<10ms latency) and automated Airflow retraining.</p>
-                    </div>
-                    <div class="proj-tags">KAFKA<br>FASTAPI<br>AIRFLOW</div>
-                </a>
-
-                <a href="https://github.com/vanshkamra12/InferGate-API-Gateway" target="_blank" class="proj-row">
-                    <div class="proj-meta">02 — API INFRA</div>
-                    <div class="proj-info">
-                        <h3 class="proj-name">INFERGATE</h3>
-                        <p class="proj-desc">Production-grade AI request router orchestrating 5 microservices via Docker Compose. Implements Redis sliding-window rate limiting and distributed tracing.</p>
-                    </div>
-                    <div class="proj-tags">TYPESCRIPT<br>REDIS<br>DOCKER</div>
-                </a>
-
-                <a href="https://github.com/vanshkamra12/codebase-analyzer-cli" target="_blank" class="proj-row">
-                    <div class="proj-meta">03 — DEV TOOL</div>
-                    <div class="proj-info">
-                        <h3 class="proj-name">CODEBASE ANALYZER</h3>
-                        <p class="proj-desc">Static analysis CLI engine extracting functions and call edges to compute McCabe complexity across massive Python repositories.</p>
-                    </div>
-                    <div class="proj-tags">PYTHON<br>AST<br>RICH</div>
-                </a>
-
-                <a href="https://github.com/vanshkamra12/CyberThreat-Intel-LLM" target="_blank" class="proj-row">
-                    <div class="proj-meta">04 — APPLIED AI</div>
-                    <div class="proj-info">
-                        <h3 class="proj-name">CYBERTHREAT INTEL</h3>
-                        <p class="proj-desc">Specialized SecOps Model fine-tuned on Phi-3-mini (3.8B) using QLoRA. Generates structured MITRE ATT&CK mappings from raw CVE data.</p>
-                    </div>
-                    <div class="proj-tags">PYTORCH<br>QLORA<br>HUGGINGFACE</div>
-                </a>
-
-                <a href="https://github.com/vanshkamra12/docquery-ai" target="_blank" class="proj-row">
-                    <div class="proj-meta">05 — RAG PIPELINE</div>
-                    <div class="proj-info">
-                        <h3 class="proj-name">DOCQUERY AI</h3>
-                        <p class="proj-desc">AI-powered document Q&A system utilizing ChromaDB for vector storage and Google Gemini for semantic search.</p>
-                    </div>
-                    <div class="proj-tags">CHROMADB<br>GEMINI<br>STREAMLIT</div>
-                </a>
-
+    <footer class="py-12 border-t border-white/5 px-6 md:px-10 panel">
+        <div class="mx-auto max-w-[1440px] flex flex-wrap justify-between items-center gap-8 font-mono text-[10px] uppercase tracking-[0.2em] text-white/40">
+            <div class="flex gap-8 relative z-50">
+                <a href="mailto:vanshkamra27@gmail.com" class="hover:text-[#00f0ff] transition-colors">Direct</a>
+                <a href="https://linkedin.com/in/vanshkamra12" target="_blank" class="hover:text-[#00f0ff] transition-colors">LinkedIn</a>
+                <a href="https://github.com/vanshkamra12" target="_blank" class="hover:text-[#00f0ff] transition-colors">GitHub</a>
             </div>
-        </div>
-    </section>
-
-
-
-    <section id="contact" class="panel">
-        <div class="container" style="text-align: center;">
-            <h2 class="sec-title" style="margin-bottom: 0;">INITIATE CONTACT</h2>
-            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=vanshkamra27@gmail.com" target="_blank" class="email-huge">VANSHKAMRA27@GMAIL.COM</a>
-        </div>
-    </section>
-
-    <footer>
-        <div>© 2024 VANSH KAMRA</div>
-        <div class="socials">
-            <a href="https://github.com/vanshkamra12" target="_blank">GITHUB</a>
-            <a href="https://linkedin.com/in/vanshkamra12" target="_blank">LINKEDIN</a>
-            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=vanshkamra27@gmail.com" target="_blank">EMAIL</a>
+            <div class="flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-[#00f0ff] animate-pulse"></span>
+                <span>Neural Link Active // 2026</span>
+            </div>
         </div>
     </footer>
 
     <script>
-        // ----------------------------------------------------
-        // SMOOTH SCROLL (LENIS)
-        // ----------------------------------------------------
-        const lenis = new Lenis({
-            duration: 1.2,
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-            direction: 'vertical',
-            gestureDirection: 'vertical',
-            smooth: true,
-        })
-        function raf(time) {
-            lenis.raf(time)
-            requestAnimationFrame(raf)
+        // Force scroll to top on refresh
+        if (history.scrollRestoration) {
+            history.scrollRestoration = 'manual';
         }
-        requestAnimationFrame(raf)
+        window.scrollTo(0, 0);
 
-        document.querySelectorAll('a[href^="#"]').forEach(a => {
-            a.addEventListener('click', e => {
-                const target = a.getAttribute('href');
-                if (target === '#') return;
-                const el = document.querySelector(target);
-                if (el) { e.preventDefault(); lenis.scrollTo(el, { offset: 0, duration: 1.2 }); }
-            });
+        // 1. LOADER
+        let loaded = false;
+        const loader = document.getElementById('loader');
+        const loaderBar = document.getElementById('loader-bar');
+        const loaderPercent = document.getElementById('loader-percent');
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += Math.random() * 5;
+            if (progress >= 100) {
+                progress = 100;
+                clearInterval(interval);
+                setTimeout(() => {
+                    gsap.to(loader, { y: '-100%', duration: 1, ease: "power4.inOut", onComplete: () => {
+                        loader.style.display = 'none';
+                        initAnimations();
+                    }});
+                }, 500);
+            }
+            loaderBar.style.width = progress + '%';
+            loaderPercent.innerText = String(Math.floor(progress)).padStart(3, '0') + ' / 100';
+        }, 50);
+
+        // 2. CURSOR & TIME
+        const dot = document.querySelector('.cursor-dot');
+        const ring = document.querySelector('.cursor-ring');
+        document.addEventListener('mousemove', (e) => {
+            gsap.to(dot, { x: e.clientX, y: e.clientY, duration: 0 });
+            gsap.to(ring, { x: e.clientX, y: e.clientY, duration: 0.15 });
+            const hover = e.target.closest('a, button, .tilt-card');
+            if (hover) ring.classList.add('hover'); else ring.classList.remove('hover');
         });
 
-        // ----------------------------------------------------
-        // CUSTOM CURSOR
-        // ----------------------------------------------------
-        const dot = document.getElementById('cursor-dot');
-        const ring = document.getElementById('cursor-ring');
-        let mouseX = window.innerWidth / 2;
-        let mouseY = window.innerHeight / 2;
-        let ringX = mouseX, ringY = mouseY;
-
-        window.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-            dot.style.left = `${mouseX}px`;
-            dot.style.top = `${mouseY}px`;
-        });
-
-        function animateCursor() {
-            ringX += (mouseX - ringX) * 0.2;
-            ringY += (mouseY - ringY) * 0.2;
-            ring.style.left = `${ringX}px`;
-            ring.style.top = `${ringY}px`;
-            requestAnimationFrame(animateCursor);
-        }
-        animateCursor();
-
-        // Hover Effects
-        const interactiveElements = document.querySelectorAll('a, .skill-item, .proj-row, .award-row');
-        interactiveElements.forEach(el => {
-            el.addEventListener('mouseenter', () => ring.classList.add('hover'));
-            el.addEventListener('mouseleave', () => ring.classList.remove('hover'));
-        });
-
-        // ----------------------------------------------------
-        // THREE.JS OUT-OF-THE-BOX SCENE (INTERACTIVE SWARM)
-        // ----------------------------------------------------
-        const container = document.getElementById('canvas-container');
+        // 3. THREE.JS MASTERPIECE
         const scene = new THREE.Scene();
-        scene.background = new THREE.Color('#000000'); // Deep dark mode
-
         const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
-        camera.position.z = 15;
-
-        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+        camera.position.z = 8;
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        container.appendChild(renderer.domElement);
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
 
-        // 1. Lighting: Moody & Dramatic
-        const ambient = new THREE.AmbientLight(0xffffff, 0.1);
-        scene.add(ambient);
+        const particleCount = 15000;
+        const shapes = {
+            infinity: new Float32Array(particleCount * 3),
+            sphere: new Float32Array(particleCount * 3),
+            grid: new Float32Array(particleCount * 3),
+            helix: new Float32Array(particleCount * 3)
+        };
+        
+        for(let i = 0; i < particleCount; i++) {
+            const i3 = i * 3;
+            // INFINITY (Hero)
+            const t = (i / particleCount) * Math.PI * 2;
+            const sc = 13;
+            const x = (sc * Math.cos(t)) / (1 + Math.sin(t) * Math.sin(t));
+            const y = (sc * Math.sin(t) * Math.cos(t)) / (1 + Math.sin(t) * Math.sin(t));
+            const z = Math.sin(t * 3) * 3;
+            const sp = 2.6; 
+            shapes.infinity[i3] = x + (Math.random() - 0.5) * sp;
+            shapes.infinity[i3+1] = y + (Math.random() - 0.5) * sp;
+            shapes.infinity[i3+2] = z + (Math.random() - 0.5) * sp;
 
-        const dirLight = new THREE.DirectionalLight(0xffffff, 2.0);
-        dirLight.position.set(10, 20, 10);
-        scene.add(dirLight);
+            // SPHERE (About)
+            const phi = Math.acos(-1 + (2 * i) / particleCount);
+            const theta = Math.sqrt(particleCount * Math.PI) * phi;
+            shapes.sphere[i3] = 4.5 * Math.cos(theta) * Math.sin(phi);
+            shapes.sphere[i3+1] = 4.5 * Math.sin(theta) * Math.sin(phi);
+            shapes.sphere[i3+2] = 4.5 * Math.cos(phi);
 
-        // 2. The Instanced Swarm (Torus Knot Formation)
-        const count = 6000;
-        const dummy = new THREE.Object3D();
-        const color = new THREE.Color();
-        const geometry = new THREE.BoxGeometry(0.12, 0.12, 0.12);
+            // GRID (Works)
+            const gStep = Math.sqrt(particleCount);
+            shapes.grid[i3] = ((i % gStep) / gStep - 0.5) * 14;
+            shapes.grid[i3+1] = (Math.floor(i / gStep) / gStep - 0.5) * 14;
+            shapes.grid[i3+2] = Math.sin(i * 0.1) * 0.3;
 
-        // Dark, premium brushed metal
-        const material = new THREE.MeshStandardMaterial({
-            color: 0xffffff,
-            metalness: 0.9,
-            roughness: 0.2
-        });
-
-        const instancedMesh = new THREE.InstancedMesh(geometry, material, count);
-        scene.add(instancedMesh);
-
-        window.morphFactor = { value: 0 };
-        const cubes = [];
-        let gridIndex = 0;
-        const gridDimX = 20, gridDimY = 20, gridDimZ = 15;
-        const spacing = 0.5;
-
-        for (let i = 0; i < count; i++) {
-            // Generate mathematical Torus Knot points
-            const u = Math.random() * Math.PI * 2;
-            const v = Math.random() * Math.PI * 2;
-
-            const p = 3, q = 4;
-            const r = Math.cos(q * u) + 2;
-            const x = r * Math.cos(p * u) * 1.5;
-            const y = r * Math.sin(p * u) * 1.5;
-            const z = -Math.sin(q * u) * 1.5;
-
-            // Add spread for volumetric thickness
-            const spread = 0.8;
-            const bx = x + (Math.random() - 0.5) * spread;
-            const by = y + (Math.random() - 0.5) * spread;
-            const bz = z + (Math.random() - 0.5) * spread;
-
-            // Generate Grid points (Neural Network shape)
-            let gx = (gridIndex % gridDimX) - (gridDimX / 2);
-            let gy = (Math.floor(gridIndex / gridDimX) % gridDimY) - (gridDimY / 2);
-            let gz = (Math.floor(gridIndex / (gridDimX * gridDimY))) - (gridDimZ / 2);
-            gx *= spacing;
-            gy *= spacing;
-            gz *= spacing;
-            gx += (Math.random() - 0.5) * 0.2;
-            gy += (Math.random() - 0.5) * 0.2;
-            gz += (Math.random() - 0.5) * 0.2;
-            gridIndex++;
-
-            cubes.push({
-                baseX: bx, baseY: by, baseZ: bz,
-                gridX: gx, gridY: gy, gridZ: gz,
-                x: bx, y: by, z: bz,
-                vx: 0, vy: 0, vz: 0,
-                rx: Math.random() * Math.PI,
-                ry: Math.random() * Math.PI,
-                rz: Math.random() * Math.PI
-            });
-
-            // 85% Obsidian Metal, 15% Stark White Glow
-            const isWhite = Math.random() > 0.85;
-            color.setHex(isWhite ? 0xffffff : 0x050505);
-            instancedMesh.setColorAt(i, color);
+            // HELIX (Contact)
+            const hAngle = 0.08 * i;
+            shapes.helix[i3] = 2.5 * Math.cos(hAngle);
+            shapes.helix[i3+1] = (i / particleCount - 0.5) * 15;
+            shapes.helix[i3+2] = 2.5 * Math.sin(hAngle);
         }
-        instancedMesh.instanceColor.needsUpdate = true;
 
-        // Resize Handling
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
+        const swarmGeo = new THREE.BufferGeometry();
+        // Start with random chaos for the cinematic assembly
+        const initialPos = new Float32Array(particleCount * 3);
+        for(let i=0; i<particleCount*3; i++) initialPos[i] = (Math.random() - 0.5) * 60;
+        
+        swarmGeo.setAttribute('position', new THREE.BufferAttribute(initialPos, 3));
+        
+        const swarmMat = new THREE.PointsMaterial({
+            color: 0x00f0ff,
+            size: 0.03,
+            transparent: true,
+            opacity: 0,
+            blending: THREE.AdditiveBlending,
+            sizeAttenuation: true
         });
+        
+        const swarm = new THREE.Points(swarmGeo, swarmMat);
+        scene.add(swarm);
 
-        // 3. Mouse Interaction Logic
-        const raycaster = new THREE.Raycaster();
-        const mouseVec = new THREE.Vector2(-9999, -9999);
-        const plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
-        const pointer = new THREE.Vector3();
+        const morphState = {
+            progress: 0,
+            entry: 0 // 0 to 1 for the opening assembly
+        };
 
+        let mouseX = 0, mouseY = 0;
         window.addEventListener('mousemove', (e) => {
-            mouseVec.x = (e.clientX / window.innerWidth) * 2 - 1;
-            mouseVec.y = -(e.clientY / window.innerHeight) * 2 + 1;
+            mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+            mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
         });
 
-        const clock = new THREE.Clock();
-        let isTabActive = true;
-        document.addEventListener('visibilitychange', () => {
-            isTabActive = !document.hidden;
-        });
-
-        function animate() {
+        function animate(t) {
             requestAnimationFrame(animate);
-            if (!isTabActive) return; // Battery optimization: pause WebGL when tab is inactive
+            const time = t * 0.001;
             
-            const time = clock.getElapsedTime();
+            const index = Math.floor(morphState.progress);
+            const nextIndex = Math.min(index + 1, 3);
+            const alpha = morphState.progress % 1;
 
-            // Find 3D coordinate of mouse
-            raycaster.setFromCamera(mouseVec, camera);
-            raycaster.ray.intersectPlane(plane, pointer);
-            instancedMesh.worldToLocal(pointer); // Adjust for mesh rotation
+            const targetNames = ['infinity', 'sphere', 'grid', 'helix'];
+            const startShape = shapes[targetNames[index]];
+            const endShape = shapes[targetNames[nextIndex]];
 
-            // Physics Loop for Swarm
-            for (let i = 0; i < count; i++) {
-                const cube = cubes[i];
+            const positions = swarm.geometry.attributes.position.array;
+            for(let i = 0; i < particleCount; i++) {
+                const i3 = i * 3;
+                
+                // Interpolate target shape
+                const tx = startShape[i3] + (endShape[i3] - startShape[i3]) * alpha;
+                const ty = startShape[i3+1] + (endShape[i3+1] - startShape[i3+1]) * alpha;
+                const tz = startShape[i3+2] + (endShape[i3+2] - startShape[i3+2]) * alpha;
 
-                // Repulsion
-                const dx = cube.x - pointer.x;
-                const dy = cube.y - pointer.y;
-                const dz = cube.z - pointer.z;
-                const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
-
-                let fx = 0, fy = 0, fz = 0;
-                const maxDist = 3.0; // Radius of interaction
-
-                if (dist < maxDist) {
-                    const force = (maxDist - dist) * 0.02; // Strength of explosion
-                    fx += (dx / dist) * force;
-                    fy += (dy / dist) * force;
-                    fz += (dz / dist) * force;
-                }
-
-                // Spring back to target formation (morphs based on scroll)
-                const targetX = cube.baseX * (1 - window.morphFactor.value) + cube.gridX * window.morphFactor.value;
-                const targetY = cube.baseY * (1 - window.morphFactor.value) + cube.gridY * window.morphFactor.value;
-                const targetZ = cube.baseZ * (1 - window.morphFactor.value) + cube.gridZ * window.morphFactor.value;
-
-                fx += (targetX - cube.x) * 0.04;
-                fy += (targetY - cube.y) * 0.04;
-                fz += (targetZ - cube.z) * 0.04;
-
-                // Velocity & Damping
-                cube.vx = (cube.vx + fx) * 0.88;
-                cube.vy = (cube.vy + fy) * 0.88;
-                cube.vz = (cube.vz + fz) * 0.88;
-
-                cube.x += cube.vx;
-                cube.y += cube.vy;
-                cube.z += cube.vz;
-
-                // Rotate individual cubes based on movement
-                cube.rx += cube.vx * 0.5;
-                cube.ry += cube.vy * 0.5;
-
-                dummy.position.set(cube.x, cube.y, cube.z);
-                dummy.rotation.set(cube.rx, cube.ry, cube.rz);
-                dummy.updateMatrix();
-                instancedMesh.setMatrixAt(i, dummy.matrix);
+                // Slow motion assembly / Implosion
+                const factor = morphState.entry < 0.1 ? 0.02 : 0.08;
+                positions[i3] += (tx - positions[i3]) * factor;
+                positions[i3+1] += (ty - positions[i3+1]) * factor;
+                positions[i3+2] += (tz - positions[i3+2]) * factor;
+                
+                positions[i3] += Math.sin(time + i) * 0.005;
+                positions[i3+1] += Math.cos(time + i) * 0.005;
             }
-            instancedMesh.instanceMatrix.needsUpdate = true;
-
-            // Slowly rotate the entire Torus Knot
-            instancedMesh.rotation.y = time * 0.1;
-            instancedMesh.rotation.x = time * 0.05;
-
-            // Subtle Camera Parallax
-            camera.position.x += (mouseVec.x * 1.5 - camera.position.x) * 0.05;
-            camera.position.y += (mouseVec.y * 1.5 - camera.position.y) * 0.05;
-            camera.lookAt(scene.position);
+            swarm.geometry.attributes.position.needsUpdate = true;
+            
+            // Fast spin during assembly, slow crawl after
+            swarm.rotation.y += 0.001 + (morphState.entry < 1 ? 0.02 * (1 - morphState.entry) : 0);
+            
+            camera.position.x += (mouseX * 1.5 - camera.position.x) * 0.05;
+            camera.position.y += (mouseY * 1.5 - camera.position.y) * 0.05;
+            camera.lookAt(0,0,0);
 
             renderer.render(scene, camera);
         }
-        animate();
+        animate(0);
 
-        // ----------------------------------------------------
-        // GSAP SCROLL ANIMATIONS (PARALLAX SWARM)
-        // ----------------------------------------------------
-        gsap.registerPlugin(ScrollTrigger);
-        lenis.on('scroll', ScrollTrigger.update);
+        // 4. ANIMATIONS & SCROLL
+        const lenis = new Lenis();
+        function scrollRaf(time) { lenis.raf(time); requestAnimationFrame(scrollRaf); }
+        requestAnimationFrame(scrollRaf);
 
-        const isMobile = window.innerWidth < 1024;
+        function initAnimations() {
+            lucide.createIcons();
+            setInterval(() => {
+                const d = new Date();
+                document.getElementById('utc-time').innerText = "UTC " + d.toLocaleTimeString('en-US', { hour12: false });
+            }, 1000);
 
-        if (!isMobile) {
-            // Hero -> About: Move Swarm Right
-            gsap.to(instancedMesh.position, {
-                x: 5, y: 0,
-                scrollTrigger: {
-                    trigger: "#about",
-                    start: "top bottom",
-                    end: "top center",
-                    scrub: 1
-                }
-            });
+            // THE SLOW MOTION ASSEMBLY INTRO
+            const tl = gsap.timeline();
+            tl.to(swarmMat, { opacity: 0.8, duration: 1.5 })
+              .to(morphState, { entry: 1, duration: 2.5, ease: "power2.inOut" }, "-=1");
 
-            // About -> Skills: Move Swarm Left AND Morph to Grid
-            gsap.to(instancedMesh.position, {
-                x: -5, y: 0,
-                scrollTrigger: {
-                    trigger: "#skills",
-                    start: "top bottom",
-                    end: "top center",
-                    scrub: 1
-                }
+            gsap.to(morphState, {
+                progress: 3,
+                scrollTrigger: { trigger: "main", start: "top top", end: "bottom bottom", scrub: 1.5 }
             });
-            gsap.to(window.morphFactor, {
-                value: 1,
-                scrollTrigger: {
-                    trigger: "#skills",
-                    start: "top bottom",
-                    end: "top center",
-                    scrub: 1
-                }
-            });
-
-            // Skills -> Projects: Move Center, Scale Down, Push Back AND Morph to Swarm
-            gsap.to(instancedMesh.position, {
-                x: 0, y: 3, z: -10,
-                scrollTrigger: {
-                    trigger: "#projects",
-                    start: "top bottom",
-                    end: "bottom center",
-                    scrub: 1
-                }
-            });
-            gsap.to(instancedMesh.scale, {
-                x: 0.5, y: 0.5, z: 0.5,
-                scrollTrigger: {
-                    trigger: "#projects",
-                    start: "top bottom",
-                    end: "bottom center",
-                    scrub: 1
-                }
-            });
-            gsap.to(window.morphFactor, {
-                value: 0,
-                scrollTrigger: {
-                    trigger: "#projects",
-                    start: "top bottom",
-                    end: "top center",
-                    scrub: 1
-                }
-            });
-
-            // Projects -> Contact: Engulf the screen
-            gsap.to(instancedMesh.position, {
-                x: 0, y: 0, z: 5,
-                scrollTrigger: {
-                    trigger: "#contact",
-                    start: "top bottom",
-                    end: "bottom bottom",
-                    scrub: 1
-                }
-            });
-            gsap.to(instancedMesh.scale, {
-                x: 1.5, y: 1.5, z: 1.5,
-                scrollTrigger: {
-                    trigger: "#contact",
-                    start: "top bottom",
-                    end: "bottom bottom",
-                    scrub: 1
-                }
+            
+            document.querySelectorAll('.tilt-card-wrapper').forEach(card => {
+                const inner = card.querySelector('.tilt-card');
+                card.addEventListener('mousemove', (e) => {
+                    const r = card.getBoundingClientRect();
+                    const x = (e.clientX - r.left) / r.width - 0.5;
+                    const y = (e.clientY - r.top) / r.height - 0.5;
+                    gsap.to(inner, { rotationY: x * 20, rotationX: -y * 20, duration: 0.5 });
+                });
+                card.addEventListener('mouseleave', () => gsap.to(inner, { rotationY: 0, rotationX: 0, duration: 0.5 }));
             });
         }
-
-        // ----------------------------------------------------
-        // MAGNETIC HOVER EFFECT (Premium UX)
-        // ----------------------------------------------------
-        const magnetics = document.querySelectorAll('.nav-links a, .email-huge');
-        magnetics.forEach(btn => {
-            btn.addEventListener('mousemove', (e) => {
-                const rect = btn.getBoundingClientRect();
-                const h = rect.width / 2;
-                const w = rect.height / 2;
-                const x = e.clientX - rect.left - h;
-                const y = e.clientY - rect.top - w;
-                
-                gsap.to(btn, {
-                    x: x * 0.3,
-                    y: y * 0.3,
-                    duration: 0.4,
-                    ease: "power2.out"
-                });
-            });
-            btn.addEventListener('mouseleave', () => {
-                gsap.to(btn, {
-                    x: 0,
-                    y: 0,
-                    duration: 0.4,
-                    ease: "elastic.out(1, 0.3)"
-                });
-            });
-        });
-
-        // HTML Content Reveal
-        gsap.utils.toArray('.sec-title, .about-text p, .stats-row, .skills-grid, .proj-row, .email-huge').forEach(el => {
-            gsap.from(el, {
-                y: 40,
-                opacity: 0,
-                duration: 1,
-                ease: "power3.out",
-                scrollTrigger: {
-                    trigger: el,
-                    start: "top 85%",
-                    toggleActions: "play none none reverse"
-                }
-            });
-        });
     </script>
 </body>
-
 </html>
